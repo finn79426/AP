@@ -4,7 +4,7 @@
 
 # Require
 
-- `WiFi Dongle`
+- 1 WiFi Dongle
 - `apt update`
 - `apt install hostapd`
 - `apt install bridge-utils`
@@ -29,7 +29,7 @@ Prerequisites:
 
 # Case 1: Build a Wireless MitM-able Environment
 
-## Platform
+## Tested Platform
 
 - Laptop: Macbook Air 2017 (Only 1 WiFi Adapter)
 - VM: VMware Fusion 11
@@ -48,17 +48,21 @@ Prerequisites:
 
 ## Steps
 
-1. Set Build-In Adapter as Bridged
-2. Set RJ-45 Adapter as Bridged
-3. `brctl addbr br0` (`ip addr show` to check)
-4. `brctl addif br0 <RJ-45>`
-5. Put `./hostapd.conf` to `/etc/hostapd/`
-6. `service hostapd restart`
-7. Edit `./dnsmasq.conf`, rename the `interface` to RJ-45 Adapter
-8. Put `./dnsmasq.conf` to `/etc/`
-8. `./ap.sh -s <Build-In> -i br0`
+### VMware Setting On Host
+1. Set Build-In Adapter as Bridged (VMware Setting On Host)
+2. Set RJ-45 Adapter as Bridged (VMware Setting On Host)
 
-The IP Range of the RJ-45 and WiFi Dongle and the Device connected to WiFi Dongle：`10.0.0.10-15 ==> /28`
+### In VM
+
+1. `brctl addbr br0` (`ip addr show` to check)
+2. `brctl addif br0 <RJ-45>`
+3. Put `./hostapd.conf` to `/etc/hostapd/`
+4. `service hostapd restart`
+5. Edit `./dnsmasq.conf`, rename the `interface` to RJ-45 Adapter
+6. Put `./dnsmasq.conf` to `/etc/`
+7. `./ap.sh -s <Build-In> -i br0`
+
+The IP Range of the RJ-45 and WiFi Dongle and the Device connected to WiFi Dongle：`10.0.0.10-15 ==> /28`  
 Collect all traffic between RJ-45 and WiFi Dongle: Aim at `br0`
 
 - `brctl delif br0` if it is no longer used
@@ -67,5 +71,5 @@ Collect all traffic between RJ-45 and WiFi Dongle: Aim at `br0`
 
 # Q&A
 
-Q: 我作爲虛擬機 NAT 的網卡明明拿到 ip 了，但卻怎麽 ping 也 ping 不出去，顯示 Network Unreachable 怎麽回事？
+Q: 我作爲虛擬機 NAT 的網卡明明拿到 ip 了，但卻怎麽 ping 也 ping 不出去，顯示 Network Unreachable 怎麽回事？  
 A: 估計是因爲頻繁切換 WiFi 導致 NAT 的路由跑掉了，通常輸入以下指令可以解決 `route add default gw 192.168.xx.1`，xx 要根據你的 mask 來改成正確的數字。
